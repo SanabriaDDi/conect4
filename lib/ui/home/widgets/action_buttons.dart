@@ -1,4 +1,6 @@
+import 'package:conect4/ui/home/board_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ActionButtons extends StatelessWidget {
   const ActionButtons({Key? key}) : super(key: key);
@@ -9,7 +11,7 @@ class ActionButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => context.read<BoardCubit>().initialBoard(),
           child: const Text('Reiniciar partida'),
         ),
         ElevatedButton(

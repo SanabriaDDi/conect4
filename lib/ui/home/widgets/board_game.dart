@@ -23,7 +23,16 @@ class BoardGame extends StatelessWidget {
       ),
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(4),
-      child: BlocBuilder<BoardCubit, BoardState>(
+      child: BlocConsumer<BoardCubit, BoardState>(
+        listener: (context, state) {
+          if (state.winner != null) {
+            final String winner =
+                state.winner == PlayerTurn.redPlayer ? 'ROJO' : 'AMARILLO';
+
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('GANA $winner')));
+          }
+        },
         builder: (context, state) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

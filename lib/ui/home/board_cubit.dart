@@ -5,21 +5,28 @@ enum PlayerTurn { redPlayer, yellowPlayer }
 enum CircleOwner { free, redPlayer, yellowPlayer }
 
 class BoardState {
-  final PlayerTurn playerTurn;
-  final List<List<CircleOwner>> board;
   static const int boardHeight = 6;
   static const int boardWidth = 7;
+  static const int numberConnected4 = 4;
+
+  final PlayerTurn playerTurn;
+  final PlayerTurn? winner;
+  final List<List<CircleOwner>> board;
 
   BoardState(
-      {this.playerTurn = PlayerTurn.redPlayer, List<List<CircleOwner>>? board})
+      {this.playerTurn = PlayerTurn.redPlayer,
+      this.winner,
+      List<List<CircleOwner>>? board})
       : board = board ?? [];
 
   BoardState copyWith({
     PlayerTurn? playerTurn,
+    PlayerTurn? winner,
     List<List<CircleOwner>>? board,
   }) =>
       BoardState(
         playerTurn: playerTurn ?? this.playerTurn,
+        winner: winner,
         board: board ?? this.board,
       );
 }
@@ -44,24 +51,100 @@ class BoardCubit extends Cubit<BoardState> {
   }) {
     final columnToUpdate = state.board[columnPositionX];
 
-    for (int i = columnToUpdate.length - 1; i >= 0; i--) {
-      final chip = columnToUpdate[i];
+    for (int rowPosition = columnToUpdate.length - 1;
+        rowPosition >= 0;
+        rowPosition--) {
+      final chip = columnToUpdate[rowPosition];
 
       if (chip == CircleOwner.free) {
-        PlayerTurn playerTurn = state.playerTurn;
+        final PlayerTurn playerTurn = state.playerTurn;
         late final PlayerTurn newPlayerTurn;
+        late final CircleOwner newChipOwner;
         if (playerTurn == PlayerTurn.redPlayer) {
-          columnToUpdate[i] = CircleOwner.redPlayer;
+          newChipOwner = CircleOwner.redPlayer;
+          columnToUpdate[rowPosition] = newChipOwner;
           newPlayerTurn = PlayerTurn.yellowPlayer;
         }
         if (playerTurn == PlayerTurn.yellowPlayer) {
-          columnToUpdate[i] = CircleOwner.yellowPlayer;
+          newChipOwner = CircleOwner.yellowPlayer;
+          columnToUpdate[rowPosition] = newChipOwner;
           newPlayerTurn = PlayerTurn.redPlayer;
         }
 
         emit(state.copyWith(board: state.board, playerTurn: newPlayerTurn));
+
+        final bool endGame = existsConnect4Winner(
+          columnInitialPosition: columnPositionX,
+          rowInitialPosition: rowPosition,
+          owner: newChipOwner,
+        );
+
+        if (endGame) {
+          emit(state.copyWith(winner: playerTurn));
+        }
+
         break;
       }
     }
+  }
+
+  bool existsConnect4Winner({
+    required int columnInitialPosition,
+    required int rowInitialPosition,
+    required CircleOwner owner,
+  }) {
+    final bool connected4Horizontal =
+        horizontalSearch(columnInitialPosition, rowInitialPosition, owner);
+    final bool connected4Vertical =
+        verticalSearch(columnInitialPosition, rowInitialPosition, owner);
+
+    if (connected4Horizontal || connected4Vertical) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool horizontalSearch(int columnInitialPosition, int rowInitialPosition,
+      CircleOwner circleOwner) {
+    int numberHorizontalConnectedChips = 1;
+    // Search initial to right
+    for (int columnPosition = columnInitialPosition + 1;
+        columnPosition < state.board.length;
+        columnPosition++) {
+      if (state.board[columnPosition][rowInitialPosition] != circleOwner) {
+        break;
+      }
+      numberHorizontalConnectedChips += 1;
+    }
+
+    // Search initial to left
+    for (int columnPosition = columnInitialPosition - 1;
+        columnPosition >= 0;
+        columnPosition--) {
+      if (state.board[columnPosition][rowInitialPosition] != circleOwner) {
+        break;
+      }
+      numberHorizontalConnectedChips += 1;
+    }
+
+    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
+  }
+
+  bool verticalSearch(int columnInitialPosition, int rowInitialPosition,
+      CircleOwner circleOwner) {
+    int numberVerticalConnectedChips = 1;
+    // Search initial to up not needed
+    // Search initial to down
+    for (int rowPosition = rowInitialPosition + 1;
+        rowPosition < state.board[columnInitialPosition].length;
+        rowPosition++) {
+      if (state.board[columnInitialPosition][rowPosition] != circleOwner) {
+        break;
+      }
+      numberVerticalConnectedChips += 1;
+    }
+
+    return numberVerticalConnectedChips >= BoardState.numberConnected4;
   }
 }

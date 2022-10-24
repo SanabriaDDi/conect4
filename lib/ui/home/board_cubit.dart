@@ -97,8 +97,17 @@ class BoardCubit extends Cubit<BoardState> {
         horizontalSearch(columnInitialPosition, rowInitialPosition, owner);
     final bool connected4Vertical =
         verticalSearch(columnInitialPosition, rowInitialPosition, owner);
+    final bool connected4DiagonalRightUpLeftDown =
+        diagonalRightUpLeftDownSearch(
+            columnInitialPosition, rowInitialPosition, owner);
+    final bool connected4DiagonalLeftUpRightDown =
+        diagonalLeftUpRightDownSearch(
+            columnInitialPosition, rowInitialPosition, owner);
 
-    if (connected4Horizontal || connected4Vertical) {
+    if (connected4Horizontal ||
+        connected4Vertical ||
+        connected4DiagonalRightUpLeftDown ||
+        connected4DiagonalLeftUpRightDown) {
       return true;
     }
 
@@ -146,5 +155,87 @@ class BoardCubit extends Cubit<BoardState> {
     }
 
     return numberVerticalConnectedChips >= BoardState.numberConnected4;
+  }
+
+  bool diagonalRightUpLeftDownSearch(int columnInitialPosition,
+      int rowInitialPosition, CircleOwner circleOwner) {
+    int numberHorizontalConnectedChips = 1;
+
+    int newRowIndexSelected = rowInitialPosition - 1;
+
+    //search initial to right up
+    for (int columnPosition = columnInitialPosition + 1;
+        columnPosition < state.board.length;
+        columnPosition++) {
+      if (newRowIndexSelected < 0) {
+        break;
+      }
+      if (state.board[columnPosition][newRowIndexSelected] != circleOwner) {
+        break;
+      }
+      newRowIndexSelected--;
+      numberHorizontalConnectedChips += 1;
+    }
+
+    newRowIndexSelected = rowInitialPosition + 1;
+
+    //search initial to left down
+    for (int columnPosition = columnInitialPosition - 1;
+        columnPosition >= 0;
+        columnPosition--) {
+      if (newRowIndexSelected > state.board[columnPosition].length - 1) {
+        break;
+      }
+      if (state.board[columnPosition][newRowIndexSelected] != circleOwner) {
+        break;
+      }
+      newRowIndexSelected++;
+      numberHorizontalConnectedChips += 1;
+    }
+
+    newRowIndexSelected = rowInitialPosition + 1;
+
+    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
+  }
+
+  bool diagonalLeftUpRightDownSearch(int columnInitialPosition,
+      int rowInitialPosition, CircleOwner circleOwner) {
+    int numberHorizontalConnectedChips = 1;
+
+    int newRowIndexSelected = rowInitialPosition - 1;
+
+    //search initial to left up
+    for (int columnPosition = columnInitialPosition - 1;
+        columnPosition >= 0;
+        columnPosition--) {
+      if (newRowIndexSelected < 0) {
+        break;
+      }
+      if (state.board[columnPosition][newRowIndexSelected] != circleOwner) {
+        break;
+      }
+      newRowIndexSelected--;
+      numberHorizontalConnectedChips += 1;
+    }
+
+    newRowIndexSelected = rowInitialPosition + 1;
+
+    //search initial to right down
+    for (int columnPosition = columnInitialPosition + 1;
+        columnPosition < state.board.length;
+        columnPosition++) {
+      if (newRowIndexSelected > state.board[columnPosition].length - 1) {
+        break;
+      }
+      if (state.board[columnPosition][newRowIndexSelected] != circleOwner) {
+        break;
+      }
+      newRowIndexSelected++;
+      numberHorizontalConnectedChips += 1;
+    }
+
+    newRowIndexSelected = rowInitialPosition + 1;
+
+    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
   }
 }

@@ -1,16 +1,23 @@
-# conect4
+# conect4 con Flutter
 
 Monthly App Challenge mouredev
 
-## Getting Started
+## INSTRUCCIONES DEL REPO DE [mouredev](https://github.com/mouredev/Monthly-App-Challenge-2022#enero-030122)
 
-This project is a starting point for a Flutter application.
+**CONECTA 4:** Crea el juego conecta cuatro. Tienes un ejemplo parecido [aquí](https://solitariosonline.es/conecta-4).
 
-A few resources to get you started if this is your first Flutter project:
+Requisitos:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* Tablero de 7x6 (7 en el eje "x" y 6 en el "y").
+* Fichas Rojas y Amarillas. La primera partida la comienza siempre la Roja (la segunda la Amarilla, la tercera la Roja...).
+* No hay que implementar una funcionalidad que te permita jugar contra la App. Se asume que jugarán dos personas reales alternándose.
+* Al seleccionar la columna se coloca la ficha en la parte inferior.
+* Guardar el número partidas ganadas de cada equipo mientras la App no se finaliza.
+* Dos botones para reiniciar la partida en marcha y para resetear el contador de victorias y derrotas.
+* Puedes añadirle todas las funcionalidades extra que consideres.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> Uso de librearia flutter_bloc para gestionar el estado con Cubit.
+
+RESULTADO:
+
+<img src="./screenshot_game.png" style="height: 30%; width:30%;"/>

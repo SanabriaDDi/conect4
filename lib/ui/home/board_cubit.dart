@@ -7,27 +7,35 @@ enum CircleOwner { free, redPlayer, yellowPlayer }
 class BoardState {
   static const int boardHeight = 6;
   static const int boardWidth = 7;
-  static const int numberConnected4 = 4;
+  static const int numberConnectedToWin = 4;
 
   final PlayerTurn playerTurn;
   final PlayerTurn? winner;
   final List<List<CircleOwner>> board;
+  final int gamesWinRedPlayer;
+  final int gamesWinYellowPlayer;
 
   BoardState(
       {this.playerTurn = PlayerTurn.redPlayer,
       this.winner,
-      List<List<CircleOwner>>? board})
+      List<List<CircleOwner>>? board,
+      this.gamesWinRedPlayer = 0,
+      this.gamesWinYellowPlayer = 0})
       : board = board ?? [];
 
   BoardState copyWith({
     PlayerTurn? playerTurn,
     PlayerTurn? winner,
     List<List<CircleOwner>>? board,
+    int? gamesWinRedPlayer,
+    int? gamesWinYellowPlayer,
   }) =>
       BoardState(
         playerTurn: playerTurn ?? this.playerTurn,
         winner: winner,
         board: board ?? this.board,
+        gamesWinRedPlayer: gamesWinRedPlayer ?? this.gamesWinRedPlayer,
+        gamesWinYellowPlayer: gamesWinYellowPlayer ?? this.gamesWinYellowPlayer,
       );
 }
 
@@ -44,6 +52,10 @@ class BoardCubit extends Cubit<BoardState> {
     }
 
     emit(state.copyWith(board: board, playerTurn: PlayerTurn.redPlayer));
+  }
+
+  void reloadCounterGames() {
+    emit(state.copyWith(gamesWinRedPlayer: 0, gamesWinYellowPlayer: 0));
   }
 
   void updateChip({
@@ -73,35 +85,45 @@ class BoardCubit extends Cubit<BoardState> {
 
         emit(state.copyWith(board: state.board, playerTurn: newPlayerTurn));
 
-        final bool endGame = existsConnect4Winner(
+        final bool endGame = _existsConnect4Winner(
           columnInitialPosition: columnPositionX,
           rowInitialPosition: rowPosition,
           owner: newChipOwner,
         );
 
         if (endGame) {
-          emit(state.copyWith(winner: playerTurn));
-        }
+          int gamesWinRedPlayer = state.gamesWinRedPlayer;
+          int gamesWinYellowPlayer = state.gamesWinYellowPlayer;
 
+          playerTurn == PlayerTurn.redPlayer
+              ? gamesWinRedPlayer++
+              : gamesWinYellowPlayer++;
+
+          emit(state.copyWith(
+            winner: playerTurn,
+            gamesWinRedPlayer: gamesWinRedPlayer,
+            gamesWinYellowPlayer: gamesWinYellowPlayer,
+          ));
+        }
         break;
       }
     }
   }
 
-  bool existsConnect4Winner({
+  bool _existsConnect4Winner({
     required int columnInitialPosition,
     required int rowInitialPosition,
     required CircleOwner owner,
   }) {
     final bool connected4Horizontal =
-        horizontalSearch(columnInitialPosition, rowInitialPosition, owner);
+        _horizontalSearch(columnInitialPosition, rowInitialPosition, owner);
     final bool connected4Vertical =
-        verticalSearch(columnInitialPosition, rowInitialPosition, owner);
+        _verticalSearch(columnInitialPosition, rowInitialPosition, owner);
     final bool connected4DiagonalRightUpLeftDown =
-        diagonalRightUpLeftDownSearch(
+        _diagonalRightUpLeftDownSearch(
             columnInitialPosition, rowInitialPosition, owner);
     final bool connected4DiagonalLeftUpRightDown =
-        diagonalLeftUpRightDownSearch(
+        _diagonalLeftUpRightDownSearch(
             columnInitialPosition, rowInitialPosition, owner);
 
     if (connected4Horizontal ||
@@ -114,7 +136,7 @@ class BoardCubit extends Cubit<BoardState> {
     return false;
   }
 
-  bool horizontalSearch(int columnInitialPosition, int rowInitialPosition,
+  bool _horizontalSearch(int columnInitialPosition, int rowInitialPosition,
       CircleOwner circleOwner) {
     int numberHorizontalConnectedChips = 1;
     // Search initial to right
@@ -137,10 +159,10 @@ class BoardCubit extends Cubit<BoardState> {
       numberHorizontalConnectedChips += 1;
     }
 
-    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
+    return numberHorizontalConnectedChips >= BoardState.numberConnectedToWin;
   }
 
-  bool verticalSearch(int columnInitialPosition, int rowInitialPosition,
+  bool _verticalSearch(int columnInitialPosition, int rowInitialPosition,
       CircleOwner circleOwner) {
     int numberVerticalConnectedChips = 1;
     // Search initial to up not needed
@@ -154,10 +176,10 @@ class BoardCubit extends Cubit<BoardState> {
       numberVerticalConnectedChips += 1;
     }
 
-    return numberVerticalConnectedChips >= BoardState.numberConnected4;
+    return numberVerticalConnectedChips >= BoardState.numberConnectedToWin;
   }
 
-  bool diagonalRightUpLeftDownSearch(int columnInitialPosition,
+  bool _diagonalRightUpLeftDownSearch(int columnInitialPosition,
       int rowInitialPosition, CircleOwner circleOwner) {
     int numberHorizontalConnectedChips = 1;
 
@@ -195,10 +217,10 @@ class BoardCubit extends Cubit<BoardState> {
 
     newRowIndexSelected = rowInitialPosition + 1;
 
-    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
+    return numberHorizontalConnectedChips >= BoardState.numberConnectedToWin;
   }
 
-  bool diagonalLeftUpRightDownSearch(int columnInitialPosition,
+  bool _diagonalLeftUpRightDownSearch(int columnInitialPosition,
       int rowInitialPosition, CircleOwner circleOwner) {
     int numberHorizontalConnectedChips = 1;
 
@@ -236,6 +258,6 @@ class BoardCubit extends Cubit<BoardState> {
 
     newRowIndexSelected = rowInitialPosition + 1;
 
-    return numberHorizontalConnectedChips >= BoardState.numberConnected4;
+    return numberHorizontalConnectedChips >= BoardState.numberConnectedToWin;
   }
 }

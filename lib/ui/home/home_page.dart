@@ -13,30 +13,25 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => BoardCubit()..initialBoard(),
       child: Scaffold(
-        body: Stack(
-          children: [
-            Container(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
               margin: EdgeInsets.only(top: paddingNotificationsBar),
               child: Column(
                 children: const [
-                  Text('Conecta 4'),
-                  FlutterLogo(
-                    size: 32,
-                  ),
+                  SizedBox(height: 16),
+                  CounterPoints(),
                   SizedBox(height: 16),
                   BoardGame(),
                   SizedBox(height: 32),
-                  CounterPoints()
+                  TurnIndicator(),
+                  SizedBox(height: 36),
+                  ActionButtons(),
                 ],
               ),
             ),
-            const Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: ActionButtons(),
-            ),
-          ],
+          ),
         ),
       ),
     );

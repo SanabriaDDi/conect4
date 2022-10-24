@@ -21,18 +21,9 @@ class BoardGame extends StatelessWidget {
           ),
         ],
       ),
-      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(4),
       child: BlocConsumer<BoardCubit, BoardState>(
-        listener: (context, state) {
-          if (state.winner != null) {
-            final String winner =
-                state.winner == PlayerTurn.redPlayer ? 'ROJO' : 'AMARILLO';
-
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('GANA $winner')));
-          }
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -43,6 +34,10 @@ class BoardGame extends StatelessWidget {
                           column: e,
                         ),
                         onTap: () {
+                          if (state.winner != null) {
+                            context.read<BoardCubit>().initialBoard();
+                            return;
+                          }
                           context.read<BoardCubit>().updateChip(
                               columnPositionX: state.board.indexOf(e));
                         },

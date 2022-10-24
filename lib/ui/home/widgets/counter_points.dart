@@ -11,63 +11,58 @@ class CounterPoints extends StatelessWidget {
       builder: (context, state) {
         return Column(
           children: [
-            Divider(
-              color: state.playerTurn == PlayerTurn.redPlayer
-                  ? Colors.red
-                  : Colors.yellow,
-            ),
+            const SizedBox(height: 16),
             Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   children: [
-                    const Text(
-                      'TURNO',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    const Text('Rojo'),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(32),
                       ),
-                    ),
-                    Text(
-                      state.playerTurn == PlayerTurn.redPlayer
-                          ? 'ROJO'
-                          : 'AMARILLO',
-                      style: TextStyle(
-                          color: state.playerTurn == PlayerTurn.redPlayer
-                              ? Colors.red
-                              : Colors.yellow,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 32),
+                      child: Center(
+                        child: Text(
+                          '${state.gamesWinRedPlayer}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
-            Divider(
-              color: state.playerTurn == PlayerTurn.redPlayer
-                  ? Colors.red
-                  : Colors.yellow,
-            ),
-            const SizedBox(height: 24),
-            Column(
-              children: [
-                const Text('Partidas ganadas'),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                const Text(
+                  '🏆',
+                  style: TextStyle(fontSize: 32),
+                ),
+                Column(
                   children: [
-                    Column(
-                      children: const [
-                        Text('Rojas'),
-                        Text('1'),
-                      ],
-                    ),
-                    Column(
-                      children: const [
-                        Text('Amarillas'),
-                        Text('1'),
-                      ],
+                    const Text('Amarillo'),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${state.gamesWinYellowPlayer}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

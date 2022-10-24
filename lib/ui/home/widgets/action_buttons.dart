@@ -8,15 +8,46 @@ class ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        ElevatedButton(
-          onPressed: () => context.read<BoardCubit>().initialBoard(),
-          child: const Text('Reiniciar partida'),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.all(12),
+                  ),
+                  onPressed: () => context.read<BoardCubit>().initialBoard(),
+                  child: const Icon(Icons.refresh_outlined),
+                ),
+                const SizedBox(height: 12),
+                const Text('Reiniciar partida actual'),
+              ],
+            ),
+          ),
         ),
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text('Borrar contador'),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.all(12),
+                  ),
+                  onPressed: () =>
+                      context.read<BoardCubit>().reloadCounterGames(),
+                  child: const Icon(Icons.delete),
+                ),
+                const SizedBox(height: 12),
+                const Text('Borrar contador'),
+              ],
+            ),
+          ),
         ),
       ],
     );
